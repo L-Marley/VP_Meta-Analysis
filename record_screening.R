@@ -15,4 +15,7 @@ records_unscreened <- effort_distribute(records_unscreened, reviewers = "Liam", 
 
 #### Begin screening abstracts ####
 
-abstract_screener("effot_Liam.csv", aReviewer = "Liam", abstractColumnName = "Abstract", titleColumnName = "Title")
+abstract_screener("effort_Liam.csv", aReviewer = "Liam", abstractColumnName = "Abstract.Note", titleColumnName = "Title")
+
+records_screened <- read.csv("effort_Liam.csv", header = TRUE)
+write.csv(records_screened, "all_records_firstscreen_Liam.csv")
