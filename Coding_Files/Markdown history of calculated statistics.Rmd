@@ -1,0 +1,84 @@
+---
+title: "History of Calculated Statistics"
+author: "Liam Marley"
+date: "8 July 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Setting Functions
+```{r}
+# t-test
+p_from_t <- function(t, df) {
+  round(2*pt(t, df, lower.tail = F), 3)
+}
+
+# F-test
+p_from_F <- function(f, df1, df2) {
+  round(pf(f, df1, df2, lower.tail = F), 3)
+}
+
+# Pearson's correlation
+p_from_r <- function(r, df) {
+  rt <-  sqrt(df) * r/sqrt(1 - r^2)
+  pval <- round(2 * min(pt(rt, df), pt(rt, df, lower.tail = FALSE)), 3)
+  return(pval)
+}
+
+# Standard deviation of the mean
+
+# If the standard error is provided
+# where se = the standard error, and n = group size
+
+SD_from_SE <- function(se, n) {
+  n <- sqrt(n)
+  sd <- round((se/n), 2)
+  return(sd)
+}
+```
+
+## History
+
+For each entry give the publication ID as the title, then provide the: authors, year, and page of the statistic. Followed by the type of calculation as a subtitle. 
+
+### 177
+
+Chu et al. (2015)
+pp. 178
+
+#### Standard Deviation of the Mean
+
+##### Beck's Depression Inventory
+
+```{r}
+# Control Group
+
+SD_from_SE(.64, 74)
+
+# Suicide Attempt
+
+SD_from_SE(3.04, 17)
+```
+
+##### Use of Each Perspective
+
+For the delayed task recall memories.
+
+```{r}
+# Field perspective - Control group
+SD_from_SE(.14, 74)
+
+# Observer perspective - Control group
+SD_from_SE(.12, 74)
+
+# Field perspective - Suicide attempt
+SD_from_SE(.35, 17)
+
+# Observer perspective - Suicide attempt
+SD_from_SE(.27, 17)
+```
+
+Realised the above is redundant as it's only comparing the extent each perspective was used rather than frequency per se. Pending discussion now and another possible change to the scheme may be needed. At any rate, it provides an exemplar at least. 
