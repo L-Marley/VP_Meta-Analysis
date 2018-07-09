@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 # t-test
 p_from_t <- function(t, df) {
-  round(2*pt(t, df, lower.tail = F), 3)
+  round( 2*pt(t, df, lower.tail = F), 3 )
 }
 
 # F-test
@@ -24,7 +24,7 @@ p_from_F <- function(f, df1, df2) {
 # Pearson's correlation
 p_from_r <- function(r, df) {
   rt <-  sqrt(df) * r/sqrt(1 - r^2)
-  pval <- round(2 * min(pt(rt, df), pt(rt, df, lower.tail = FALSE)), 3)
+  pval <- round( 2 * min( pt(rt, df), pt(rt, df, lower.tail = FALSE) ), 3 )
   return(pval)
 }
 
@@ -35,10 +35,38 @@ p_from_r <- function(r, df) {
 
 SD_from_SE <- function(se, n) {
   n <- sqrt(n)
-  sd <- round((se/n), 2)
+  sd <- round( (se/n), 2 )
   return(sd)
 }
 ```
+
+Two-sample t-test
+```{r}
+# m1, m2: the sample means
+# s1, s2: the sample standard deviations
+# n1, n2: the same sizes
+# m0: the null value for the difference in means to be tested for. Default is 0. 
+# equal.variance: whether or not to assume equal variance. Default is FALSE. 
+t_test2 <- function(m1, m2, sd1, sd2, n1, n2, m0=0, equal.variance = FALSE)
+{
+    if(equal.variance == FALSE) 
+    {
+        se <- sqrt( (sd1^2/n1) + (sd2^2/n2) )
+        # welch-satterthwaite df
+        df <- ( (sd1^2/n1 + sd2^2/n2)^2 )/( (sd1^2/n1)^2/(n1-1) + (sd2^2/n2)^2/(n2-1) )
+    } else
+    {
+        # pooled standard deviation, scaled by the sample sizes
+        se <- sqrt( (1/n1 + 1/n2) * ((n1-1)*sd1^2 + (n2-1)*sd2^2)/(n1+n2-2) ) 
+        df <- n1+n2-2
+    }      
+    t <- (m1-m2-m0)/se 
+    dat <- c(m1-m2, se, t, df, 2*pt(-abs(t), df))    
+    names(dat) <- c("Difference of means", "Std Error", "t", "df", "p-value")
+    return(dat) 
+}
+```
+
 
 ## History
 
@@ -82,3 +110,57 @@ SD_from_SE(.27, 17)
 ```
 
 Realised the above is redundant as it's only comparing the extent each perspective was used rather than frequency per se. Pending discussion now and another possible change to the scheme may be needed. At any rate, it provides an exemplar at least. 
+
+### 379
+
+Vella and Moulds (2014)
+pp. 259
+
+#### Exact p-value
+
+Recency
+```{r}
+p_from_t(2.00, 72)
+```
+
+#### Independent t-tests
+
+All are calculated between the post scores of field to observer vs observer to field
+
+Vividness
+```{r}
+t_test2(66.31, 69.69, 21.27, 25.05, 42, 32, equal.variance = FALSE)
+```
+
+Happiness/Positive Emotion
+```{r}
+t_test2(70.95, 82.19, 19.07, 20.32, 42, 32, equal.variance = FALSE)
+```
+
+### 255
+
+Marcotti and St Jacques (2018)
+
+
+#### Exact p-value
+
+Vividness
+pp. 334
+```{r}
+p_from_t(2.73, 19)
+```
+
+#### Independent t-tests
+
+I've assumed unequal variances and used the Welch-Satterthwaite degrees of freedom. 
+
+Emotional Intensity
+```{r}
+t_test2(m1 = 3.05, m2 = 2.99, sd1 = 1.19, sd2 = 1.46, n1 = 10, n2 = 10, equal.variance = FALSE)
+```
+
+Re-experiencing
+```{r}
+t_test2(4.18, 4.17, 1.29, 1.51, 10, 10, F)
+```
+
