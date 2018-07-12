@@ -118,10 +118,21 @@ pp. 259
 
 #### Exact p-value
 
-Recency
+Recency, between groups
 ```{r}
 p_from_t(2.00, 72)
 ```
+
+Vividness, third to first
+```{r}
+p_from_t(1.82, 31)
+```
+
+Happiness, third to first
+```{r}
+p_from_t(1.7, 31)
+```
+
 
 #### Independent t-tests
 
@@ -163,4 +174,24 @@ Re-experiencing
 ```{r}
 t_test2(4.18, 4.17, 1.29, 1.51, 10, 10, F)
 ```
+
+### 28
+
+McIssac and Eich (2002)
+
+#### Exact p-values
+
+Richness in detail/Vividness
+pp. 147
+```{r}
+p_from_t(3.27, 50)
+```
+
+Emotionality/Emotional Intensity
+pp. 147
+```{r}
+p_from_t(4.12, 50)
+```
+
+They haven't provided the standard deviations or standard errors for these means.
 

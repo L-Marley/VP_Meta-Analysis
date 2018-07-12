@@ -1,25 +1,29 @@
 #### Functions for Calculating the exact p-value from test statistics and degrees of freedom ####
 
 #### t-test ####
-# run this to define the necessary function
+
+# run this to define the function
+
 p_from_t <- function(t, df) {
   round(2*pt(t, df, lower.tail = F), 3)
 }
 
 # Example of how to use the function
+
 p_from_t(t = 3.11, df = 31)
-# or
+
+# or use
+
 p_from_t(3.11, 31) # this is equivalent 
 
 #### F-test ####
 
-# Define function
-# run this to define the necessary function
+# run this to define the function
 p_from_F <- function(f, df1, df2) {
   round(pf(f, df1, df2, lower.tail = F), 3)
 }
 
-# Example - (again the extra f = x arguments aren't strictly necessary)
+# Example - (again the extra f = , df1 = arguments aren't strictly necessary)
 p_from_F(f = 9.67, df1 = 1, df2 = 31)
 
 #### Pearson's Correlation ####
