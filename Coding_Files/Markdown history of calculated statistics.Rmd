@@ -11,10 +11,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Setting Functions
 ```{r}
-# t-test
+# t-test - p-value
 p_from_t <- function(t, df) {
-  round( 2*pt(t, df, lower.tail = F), 3 )
+  pval <- 2*pt(-abs(t), df, lower.tail = TRUE)
+  pval <- round((pval), 4)
+  return(pval)
 }
+
+# t-test - tvalue IF no means, sd, and se available
 
 # F-test
 p_from_F <- function(f, df1, df2) {
@@ -34,8 +38,7 @@ p_from_r <- function(r, df) {
 # where se = the standard error, and n = group size
 
 SD_from_SE <- function(se, n) {
-  n <- sqrt(n)
-  sd <- round( (se/n), 2 )
+  sd <- round((se * sqrt(n - 1)), 2)
   return(sd)
 }
 ```
@@ -118,17 +121,33 @@ pp. 259
 
 #### Exact p-value
 
-Recency, between groups
+Recency, pre-scores, between-subjects
 ```{r}
 p_from_t(2.00, 72)
 ```
 
-Vividness, third to first
+Emotional Intensity
+```{r}
+p_from_t(.62, 72)
+```
+
+
+Vividness, pre-scores, between-subjects
+```{r}
+p_from_t(.84, 72)
+```
+
+Vividness, shifted, within-subjects, first to third
+```{r}
+p_from_t(4.79, 41)
+```
+
+Vividness, shifted, within-subjects, third to first
 ```{r}
 p_from_t(1.82, 31)
 ```
 
-Happiness, third to first
+Happiness, shifted, within-subjects, third to first
 ```{r}
 p_from_t(1.7, 31)
 ```
@@ -136,16 +155,11 @@ p_from_t(1.7, 31)
 
 #### Independent t-tests
 
-All are calculated between the post scores of field to observer vs observer to field
+All are calculated between the pre (naturalistic) scores of field vs observer.
 
-Vividness
+Recency, between-subjects
 ```{r}
-t_test2(66.31, 69.69, 21.27, 25.05, 42, 32, equal.variance = FALSE)
-```
-
-Happiness/Positive Emotion
-```{r}
-t_test2(70.95, 82.19, 19.07, 20.32, 42, 32, equal.variance = FALSE)
+t_test2(7.36, 10.53, 6.96, 6.47, 42, 32)
 ```
 
 ### 255
@@ -181,13 +195,13 @@ McIssac and Eich (2002)
 
 #### Exact p-values
 
-Richness in detail/Vividness
+Richness in detail/Vividness, between-subjects
 pp. 147
 ```{r}
 p_from_t(3.27, 50)
 ```
 
-Emotionality/Emotional Intensity
+Emotionality/Emotional Intensity, between-subjects
 pp. 147
 ```{r}
 p_from_t(4.12, 50)
