@@ -209,3 +209,34 @@ p_from_t(4.12, 50)
 
 They haven't provided the standard deviations or standard errors for these means.
 
+### 94
+
+Sutin and Robins (2010)
+
+### t-tests
+
+Vividness, spontaneous/naturalistic, between-subjects
+pp. 632
+
+```{r}
+t_test2(4.22, 3.72, .69, .76, 335, 115, equal.variance = F)
+```
+
+Emotional Intensity, spontaneous/naturalistic, between-subjects
+pp. 632
+```{r}
+t_test2(4.04, 3.63, .82, .85, 335, 115, equal.variance = F)
+```
+
+Vividness, deliberate, between-subjects
+pp.632
+```{r}
+t_test2(4.02, 3.96, .68, .78, 128, 128, equal.variance = F)
+```
+
+Emotional Intensity, deliberate, between-subjects
+pp. 632
+```{r}
+t_test2(3.76, 3.66, .84, .84, 128, 128, equal.variance = F)
+```
+
