@@ -175,20 +175,6 @@ pp. 334
 p_from_t(2.73, 19)
 ```
 
-#### Independent t-tests
-
-I've assumed unequal variances and used the Welch-Satterthwaite degrees of freedom. 
-
-Emotional Intensity
-```{r}
-t_test2(m1 = 3.05, m2 = 2.99, sd1 = 1.19, sd2 = 1.46, n1 = 10, n2 = 10, equal.variance = FALSE)
-```
-
-Re-experiencing
-```{r}
-t_test2(4.18, 4.17, 1.29, 1.51, 10, 10, F)
-```
-
 ### 28
 
 McIssac and Eich (2002)
@@ -238,5 +224,67 @@ Emotional Intensity, deliberate, between-subjects
 pp. 632
 ```{r}
 t_test2(3.76, 3.66, .84, .84, 128, 128, equal.variance = F)
+```
+
+### 50
+Bernsten & Rubin (2006)
+
+#### t-tests
+
+Visual Imagery/Vividness, deliberate, between-subjects
+pp.1205
+```{r}
+t_test2(5.19, 5.31, 0.68, 0.77, 42, 40, equal.variance = F)
+```
+
+Emotional Intensity, deliberate, between-subjects
+pp. 1205
+```{r}
+t_test2(4.75, 4.79, .93, 1.09, 42, 40, equal.variance = F)
+```
+
+Reliving/Re-experiencing, deliberate, between-subjects
+pp. 1205
+```{r}
+t_test2(4.51, 4.65, 0.87, 0.94, 42, 40, equal.variance = F)
+```
+
+Rehearsal, deliberate, between-subjects
+pp. 1205
+```{r}
+t_test2(3.5, 3.73, .89, .74, 42, 40)
+```
+
+
+Retention Interval/Age of memory, deliberate, between-subjects
+pp. 1205
+```{r}
+t_test2(5.14, 5.87, 3.07, 3.15, 42, 40, equal.variance = F)
+```
+
+### 91
+Robinaugh and McNally (2010)
+
+#### t-tests
+
+Emotional Intensity
+pp.649
+```{r}
+t_test2(4.9, 4.4, 1.53, 1.83, 24, 93, equal.variance = F)
+```
+
+### 1
+Nigro and Neisser (1983)
+
+#### Exact p-values
+
+Vividness, study 3
+```{r}
+p_from_t(2.13, 31)
+```
+
+Recency/Age of Memory, Study 3
+```{r}
+p_from_t(2.97, 31)
 ```
 
