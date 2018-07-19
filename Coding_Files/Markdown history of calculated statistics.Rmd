@@ -137,30 +137,45 @@ Vividness, pre-scores, between-subjects
 p_from_t(.84, 72)
 ```
 
-Vividness, shifted, within-subjects, first to third
-```{r}
-p_from_t(4.79, 41)
-```
-
-Vividness, shifted, within-subjects, third to first
-```{r}
-p_from_t(1.82, 31)
-```
-
-Happiness, shifted, within-subjects, third to first
-```{r}
-p_from_t(1.7, 31)
-```
-
-
 #### Independent t-tests
 
-All are calculated between the pre (naturalistic) scores of field vs observer.
-
-Recency, between-subjects
+Recency, between-subjects, pre-score
+pp.260
+This won't change across the shift so it has been coded
 ```{r}
 t_test2(7.36, 10.53, 6.96, 6.47, 42, 32)
 ```
+
+Vividness, between-subjects, post-score
+pp.260
+```{r}
+t_test2(69.69, 66.31, 25.05, 21.27, 32, 42)
+```
+
+Happiness/Positive Emotion, between-subjects, post-scores
+pp.260
+```{r}
+t_test2(82.19, 70.95, 20.32, 19.07, 32, 42)
+```
+
+Vividness, between-subjects, pre-score (naturalistic)
+pp.260
+```{r}
+t_test2(80.00, 76.72, 12.83, 20.54, 42, 32)
+```
+
+Happiness, between-subjects, pre-score (naturalistic)
+pp.260
+```{r}
+t_test2(81.76, 86.38, 13.07, 12.32, 42, 32)
+```
+
+Recency, between-subjects, pre-score (naturalistic)
+pp.260
+```{r}
+t_test2(7.36, 10.53, 6.96, 6.47, 42, 32)
+```
+
 
 ### 255
 
