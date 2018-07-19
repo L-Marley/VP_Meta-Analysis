@@ -303,3 +303,24 @@ Recency/Age of Memory, Study 3
 p_from_t(2.97, 31)
 ```
 
+### 136
+Sekiguchi and Nonaka (2014)
+
+#### Independent t-tests
+
+Session 2 was chosen because it allows for a comparison between first and third person perspective with known group sizes, and at the participant level of analysis. 
+
+Choice between the field vs observer event was arbitary and done to avoid the issues of assuming the covariance matrix to be able to aggregate the SDs (they are paired data). Mainly due to how many assumptions about covariances that will have to be made to do the multivariate analysis. 
+
+Vividness, between-subject (chnage vs no change) at session 2
+pp.377
+```{r}
+t_test2(3.1, 3.5, 0.7, 0.5, 24, 24)
+```
+
+
+Reliving/Re-Experiencing, between-subjects (change vs no change) at session 2
+pp. 377
+```{r}
+t_test2(2.7, 2.9, 0.6, 0.6, 24, 24)
+```
