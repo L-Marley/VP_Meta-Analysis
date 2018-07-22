@@ -10,30 +10,35 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Setting Functions
+
+Exact p-value from a t-test
 ```{r}
-# t-test - p-value
 p_from_t <- function(t, df) {
   pval <- 2*pt(-abs(t), df, lower.tail = TRUE)
   pval <- round((pval), 4)
   return(pval)
 }
+```
 
-# t-test - tvalue IF no means, sd, and se available
-
+Exact p-value from a F-test
+```{r}
 # F-test
 p_from_F <- function(f, df1, df2) {
   round(pf(f, df1, df2, lower.tail = F), 3)
 }
+```
 
-# Pearson's correlation
+Exact p-value from Pearson's correlation
+```{r}
 p_from_r <- function(r, df) {
   rt <-  sqrt(df) * r/sqrt(1 - r^2)
   pval <- round( 2 * min( pt(rt, df), pt(rt, df, lower.tail = FALSE) ), 3 )
   return(pval)
 }
+```
 
-# Standard deviation of the mean
-
+Standard Deviation of the mean, from the Standard Error
+```{r}
 # If the standard error is provided
 # where se = the standard error, and n = group size
 
@@ -43,11 +48,11 @@ SD_from_SE <- function(se, n) {
 }
 ```
 
-Two-sample t-test
+Independent samples t-test
 ```{r}
 # m1, m2: the sample means
 # s1, s2: the sample standard deviations
-# n1, n2: the same sizes
+# n1, n2: the group sizes
 # m0: the null value for the difference in means to be tested for. Default is 0. 
 # equal.variance: whether or not to assume equal variance. Default is FALSE. 
 t_test2 <- function(m1, m2, sd1, sd2, n1, n2, m0=0, equal.variance = FALSE)
@@ -70,10 +75,9 @@ t_test2 <- function(m1, m2, sd1, sd2, n1, n2, m0=0, equal.variance = FALSE)
 }
 ```
 
-
 ## History
 
-For each entry give the publication ID as the title, then provide the: authors, year, and page of the statistic. Followed by the type of calculation as a subtitle. 
+For each entry give the publication ID as the title, then provide the: authors, year, and page of the statistic/info. Followed by the type of calculation as a subtitle. 
 
 ### 177
 
@@ -218,7 +222,6 @@ Sutin and Robins (2010)
 
 Vividness, spontaneous/naturalistic, between-subjects
 pp. 632
-
 ```{r}
 t_test2(4.22, 3.72, .69, .76, 335, 115, equal.variance = F)
 ```
@@ -239,6 +242,22 @@ Emotional Intensity, deliberate, between-subjects
 pp. 632
 ```{r}
 t_test2(3.76, 3.66, .84, .84, 128, 128, equal.variance = F)
+```
+
+Sharing/Rehearsal, deliberate, between-subjects
+pp.632
+```{r}
+t_test2(2.8, 2.95, 1.07, 1.02, 128, 128)
+```
+I've treated sharing as an analgoue to rehearsal because it concerns the frequency of discussing the memory with others.
+
+#### Exact p-values
+
+Perspective use, deliberate, between-subjects
+They've used a single scale for the use of first-person perspective
+pp. 632
+```{r}
+p_from_F(5.40, df1 = 1, df2 = 254)
 ```
 
 ### 50
@@ -324,3 +343,41 @@ pp. 377
 ```{r}
 t_test2(2.7, 2.9, 0.6, 0.6, 24, 24)
 ```
+
+### 15
+West and & Bauer (1999)
+
+#### Frequencies
+
+Only the percentage of memories is provided, for the effect size I'd prefer to have the calculations all done together and by metafor for consistency and reproducibility.
+
+Each participant contributed 8 memories in total, 4 for the remote memories and 4 for the recent memories. As per the coding scheme only the most recent memories are sourced. 
+
+Study 1
+pp. 268
+```{r}
+# Sample size was 48 
+# proportion of first person memories was .82
+(48*4)*0.82
+
+# proportion of third person was .18
+(48*4)*.18
+
+# Total number of memories
+48*4
+```
+Because decimal memories are not possible I'm rounding to the nearest whole for each frequency calculation. Which added together do return the correct total no. of memories. 
+
+Study 2
+pp. 272
+Surprisingly, these values are identical to study 1
+```{r}
+# Sample size was 15
+# Proportion of first person memories was .
+(15*4)*.82
+# Proportion of third person memories was
+(15*4)*.18
+# Total number of memories
+15*4
+```
+
