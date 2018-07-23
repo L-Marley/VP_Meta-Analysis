@@ -381,3 +381,94 @@ Surprisingly, these values are identical to study 1
 15*4
 ```
 
+## 102
+Wisco and Nolen-Hoeksema (2011)
+
+Note, their use of 're-experiencing' is in relation to re-experiencing the negative emotion of the event, not the sense of reliving the memory. 
+
+Each group is an independent sample: 
+* Control & first person, n = 28
+* Control & third person, n = 30
+* Dysphoric & first person, n = 25
+* Dysphoric & third person, n = 27
+
+### Standard Deviations - Control Group
+
+Emotional intensity, control group, first-person
+pp. 409
+```{r}
+SD_from_SE(0.27, 28)
+```
+
+Emotional intensity, control group, third-person
+pp. 409
+```{r}
+SD_from_SE(0.26, 30)
+```
+
+Negative Emotion, control group, first-person
+pp.409
+```{r}
+SD_from_SE(0.28, 28)
+```
+
+Negative Emotion, control group, third-person
+pp.409
+```{r}
+SD_from_SE(0.27, 30)
+```
+
+### Independent t-tests - Control Group
+
+Emotional Intensity, deliberate, control group
+pp.409
+```{r}
+t_test2(3.96, 3.44, 1.4, 1.4, 28, 30)
+```
+
+Negative Emotion, deliberate, control group
+pp.409
+```{r}
+t_test2(4.28, 4.04, 1.45, 1.45, 28, 30)
+```
+
+### Standard Deviations - Dysphoric Group
+
+Emotional Intensity, dysphoric, first-person
+pp.409
+```{r}
+SD_from_SE(0.31, 25)
+```
+
+Emotional Intensity, dysphoric, third-person
+pp.409
+```{r}
+SD_from_SE(0.27, 27)
+```
+
+Negative Emotion, dysphoric, first-person
+pp.409
+```{r}
+SD_from_SE(0.31, 25)
+```
+
+Negative Emotion, dysphoric, third-person
+pp.409
+```{r}
+SD_from_SE(0.28, 28)
+```
+
+### Independent t-tests - Dysphoric Group
+
+Emotional Intensity, deliberate, dysphoric
+pp.409
+```{r}
+t_test2(5.3, 4.70, 1.52, 1.38, 25, 27)
+```
+
+Negative Emotion, deliberate, dysphoric
+pp. 409
+```{r}
+t_test2(5.48, 5.07, 1.52, 1.45, 25, 28)
+```
+
