@@ -130,3 +130,9 @@ Calculate the effect sizes for the Negative Emotion data
 ```{r negative_effsiz}
 neg_dat <- escalc("SMD", m1i = first_mean, m2i = third_mean, sd1i = first_sd, sd2i = third_sd, n1i = first_n, n2i = third_n, data = neg_dat)
 ```
+
+### Univariate vs Multivariate Analysis
+
+Following from Gleser and Olkin's (2009) discussion of when univariate analysis can be appropriate I'm considering breaking with my original plan and conducting a univariate analysis for each dv. 
+
+That said, it will be "less efficient statistically" and I'd rather not ignore the covariance between the dvs. However, the best method available to me, that I'm aware of, is to impute these based upon the psychometric properties of the tools used. But ensure that I use a range of plausible values to check whether the imputed values will affect the results. One downside here is I know from the coding process not all studies have used established measures. 
