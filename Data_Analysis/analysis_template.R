@@ -19,15 +19,15 @@ qual_tidy <-
   filter(Analysis_Level == "Participants") %>%
   filter(Design_1 == "Experimental")
 
-#### Perspective Use 1st data - 8 studies ####
+#### Vividness data - 8 studies ####
 
 vivid_dat <- 
   qual_tidy %>%
-  select(Pub_ID:Study_ID, Emo_Mod, `Outcome - Perspective Use 1st`, `Perspective Use 1st - First_Mean`:`Perspective Use 1st - Between_Test`,
-         -c(`Perspective Use 1st - First_Corr`, `Perspective Use 1st - Third_Corr`, `Perspective Use 1st - What was the correlation with [Field-1] perspective?`)) %>%
-  rename(outcome = `Outcome - Perspective Use 1st`, first_mean = `Perspective Use 1st - First_Mean`, third_mean = `Perspective Use 1st - Third_Mean`, 
-         first_sd = `Perspective Use 1st - First_SD`, third_sd = `Perspective Use 1st - Third_SD`, 
-         first_n = `Perspective Use 1st - First_N`, third_n = `Perspective Use 1st - Third_N`) %>%
+  select(Pub_ID:Study_ID, Emo_Mod, `Outcome - Vividness`, `Vividness - First_Mean`:`Vividness - Between_Test`,
+         -c(`Vividness - First_Corr`, `Vividness - Third_Corr`, `Vividness - What was the correlation with [Field-1] perspective?`)) %>%
+  rename(outcome = `Outcome - Vividness`, first_mean = `Vividness - First_Mean`, third_mean = `Vividness - Third_Mean`, 
+         first_sd = `Vividness - First_SD`, third_sd = `Vividness - Third_SD`, 
+         first_n = `Vividness - First_N`, third_n = `Vividness - Third_N`) %>%
   drop_na()
 
 # recode missing SDs as NAs
