@@ -55,7 +55,7 @@ vivid_dat <-
 
 This leaves 11 studies for vividness.
 
-Recodes any missing Ns or SDs as NA from the -99 now that the drop_na argument has been used. These are being preserved in the analysis purely to represent the study's existence. 
+Recodes any missing Ns or SDs as NA from the -99 now that the drop_na argument has been used. 
 ```{r vivid_nas}
 # recode missing SDs as NAs
 vivid_dat$first_sd <- na_if(vivid_dat$first_sd, -99.00)
@@ -70,6 +70,45 @@ Calculate the effect sizes for the vividness data
 ```{r vivid_effsiz}
 vivid_dat <- escalc("SMD", m1i = first_mean, m2i = third_mean, sd1i = first_sd, sd2i = third_sd, n1i = first_n, n2i = third_n, data = vivid_dat)
 ```
+
+For publication 28 it's possible to calculate Cohen's d despite the missings SDs using the t-value and group sizes.
+
+To do so need to extract the t-value from the string intended for the p-curve analysis. 
+```{r vivid_tval}
+# define the pattern to match to
+tval_pat <- " \\d\\.\\d\\d"
+# extract the t-values into a new column
+vivid_dat$tval <- str_extract(vivid_dat$Vividness...Between_Test, tval_pat)
+# treat these as numeric values
+vivid_dat$tval <- as.numeric(vivid_dat$tval)
+```
+
+Unfortunately I didn't use the t-value signs when coding due to the different approaches possible across published literature. In hindsight should have done so choosing our direction beforehand and converting any that broke this. 
+
+Publication 28 states:
+"In addition,the subjects rated field memories higher than observer memories in their richness of detail [means 5.0 vs. 3.9; t(50) = 3.27]" (McIsaac & Eich, 2002, pp. 147) 
+
+This positive t-value matches the approach taken in the effect size calculations so doesn't need converting and the following chunk can be used
+
+```{r}
+# initialise an empty cohen's d variable
+vivid_dat$dval[c(1:11)] <- NA
+# use replace missing function from metafor to calculate cohen's d (all will be calculated for now although only 28 is of interest)
+vivid_dat$dval <- replmiss(vivid_dat$dval, with(vivid_dat, tval * sqrt(1/first_n + 1/third_n)))
+```
+
+Note to self: Ought to retrospectively convert all the t-values to the appropriate sign
+
+Now we can covert Cohen's d to Hedge's g to impute into the yi variable, crucially only the missing value it's possible to impute (28) will be replaced. Followed by imputing the sampling variance for the estimate (vi)
+
+```{r vivid_28impute}
+vivid_dat$yi <- replmiss(vivid_dat$yi, with(vivid_dat, (1 - 3/(4 * (first_n + third_n - 2) - 1)) * dval))
+vivid_dat$vi <- replmiss(vivid_dat$vi, with(vivid_dat, 1/first_n + 1/third_n + yi^2/(2*(first_n + third_n))))
+```
+
+An estimate of the effect size could be done in a similar way for publication 1. IF we assume group sizes. The information for this study was sourced from study 3 in the paper. (Note to self, check where study id 1 has gone for this paper)
+
+Amendment: Returning to the paper revealed that this is a within-subjects design. Using participants who'd reported at least one field and one observer memory. As such, this approach is not appropriate. 
 
 ### Emotional Intensity Data
 
