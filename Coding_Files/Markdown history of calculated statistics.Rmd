@@ -472,3 +472,48 @@ pp. 409
 t_test2(5.48, 5.07, 1.52, 1.45, 25, 28)
 ```
 
+## 63
+Williams and Moulds (2008)
+
+### Independent t-tests - Post-Shift
+
+Vividness, post-shift scores, dysphoric
+pp. 747
+```{r}
+t_test2(69.27, 60.38, 23.71, 23.65, 55, 78)
+```
+
+Reliving/Re-experiencing, post-shift scores, dsyphoric
+pp. 747
+```{r}
+options(scipen = 99)
+t_test2(54.54, 41.02, 27.54, 28.90, 55, 78)
+```
+
+Distress/Negative Emotion, post-shift scores, dysphoric
+pp. 747
+```{r}
+t_test2(60.36, 48.71, 23.72, 24.98, 55, 78)
+```
+
+
+### Independent t-tests - Pre-Shift (Naturalistic)
+
+Vividness, pre-shift, dysphoric
+pp. 746
+```{r}
+t_test2(68.39, 72.00, 22.68, 21.20, 78, 55)
+```
+
+Reliving/Re-experiencing, pre-shift, dysphoric
+pp. 746
+```{r}
+t_test2(46.98, 52.72, 25.74, 25.85, 78, 55)
+```
+
+Distress/Negative Emotion, pre-shift, dysphoric
+pp. 746
+```{r}
+t_test2(65.83, 68.28, 18.95, 19.12, 78, 55)
+```
+
