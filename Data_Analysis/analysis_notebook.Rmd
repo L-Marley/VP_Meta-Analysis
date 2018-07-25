@@ -240,7 +240,7 @@ neg_dat <- escalc("SMD", m1i = first_mean, m2i = third_mean, sd1i = first_sd, sd
 ```
 
 
-## Univariate Analysis
+# Univariate Analysis
 
 Decided to break with my original multivariate analysis plan for the sake of the write up. Will come back to this afterwards and do a multivariate analysis and evaluate whether this effects the results. 
 
@@ -258,12 +258,24 @@ forest(vivid_pmod, addfit = T)
 ```
 
 #### Emotional Cues
+This analysis looks at all studies together, implicitly combining the two clinical and 8 non-clinical samples.
 ```{r}
 vivid_emo <- rma(yi, vi, mods = ~ emo_mod, data = vivid_dat)
 summary(vivid_emo)
 forest(vivid_emo)
 ```
 
+As a sensitivity analysis will exclude the two clinical studies and rerun the model. Although based on the forest plot they don't appear to be substantially different and I don't expect any differences.
+
+```{r}
+vivid_emo2 <- 
+  vivid_dat %>%
+  filter(., clinical_mod == "No") %>%
+  rma(yi, vi, mods = ~ persp_mod, data = .)
+summary(vivid_emo2)
+forest(vivid_emo2)
+```
+The AIC, BIC, and AICc indicate the model without these studies in is a slighter better fit. Notably, none of the conclusions that may be drawn from the model are changed.
 
 ### Emotional Intensity
 
@@ -279,3 +291,17 @@ intense_emo <- rma(yi, vi, mods = ~ emo_mod, data = intense_dat)
 summary(intense_emo)
 forest(intense_emo)
 ```
+
+Given that there's only one study that's looked at positive emotion in terms of emotional intensity it may be worth restricting the moderator analysis to negative (3 studies) vs neutral (5 studies) to reduce the number of parameters being estimated. However, this is not expected to make a difference. 
+
+There's only one clinical study in this dv and it appears to be very similar to the other studies (see prior forest plot)
+
+```{r}
+intense_emo2 <- 
+  intense_dat %>% 
+  filter(., emo_mod %in% c("Negative Cue", "No")) %>%
+  rma(yi, vi, mods = ~emo_mod, data = .)
+summary(intense_emo2)
+forest(intense_emo2)
+```
+
