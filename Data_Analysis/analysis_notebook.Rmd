@@ -77,8 +77,10 @@ To do so need to extract the t-value from the string intended for the p-curve an
 ```{r vivid_tval}
 # define the pattern to match to
 tval_pat <- " \\d\\.\\d\\d"
+
 # extract the t-values into a new column
 vivid_dat$tval <- str_extract(vivid_dat$Vividness...Between_Test, tval_pat)
+
 # treat these as numeric values
 vivid_dat$tval <- as.numeric(vivid_dat$tval)
 ```
@@ -93,6 +95,7 @@ This positive t-value matches the approach taken in the effect size calculations
 ```{r}
 # initialise an empty cohen's d variable
 vivid_dat$dval[c(1:11)] <- NA
+
 # use replace missing function from metafor to calculate cohen's d (all will be calculated for now although only 28 is of interest)
 vivid_dat$dval <- replmiss(vivid_dat$dval, with(vivid_dat, tval * sqrt(1/first_n + 1/third_n)))
 ```
@@ -109,6 +112,25 @@ vivid_dat$vi <- replmiss(vivid_dat$vi, with(vivid_dat, 1/first_n + 1/third_n + y
 An estimate of the effect size could be done in a similar way for publication 1. IF we assume group sizes. The information for this study was sourced from study 3 in the paper. (Note to self, check where study id 1 has gone for this paper)
 
 Amendment: Returning to the paper revealed that this is a within-subjects design. Using participants who'd reported at least one field and one observer memory. As such, this approach is not appropriate. 
+
+Following chunk specifies the moderators as being factors rather than relying on functions to coerce them from character to factor variables.
+```{r vivid_factors}
+vivid_dat$clinical_mod <- as.factor(vivid_dat$clinical_mod)
+vivid_dat$emo_mod <- as.factor(vivid_dat$emo_mod)
+vivid_dat$persp_mod <- as.factor(vivid_dat$persp_mod)
+```
+
+Check what the factor levels are
+```{r}
+levels(vivid_dat$clinical_mod)
+levels(vivid_dat$emo_mod)
+levels(vivid_dat$persp_mod)
+```
+
+Relevel the perspective moderator so that spontaneous perspective taking is the first level
+```{r}
+vivid_dat$persp_mod <- relevel(vivid_dat$persp_mod, ref = "Spontaneous (naturalistic)")
+```
 
 ### Emotional Intensity Data
 
@@ -160,6 +182,32 @@ intense_dat$yi <- replmiss(intense_dat$yi, with(intense_dat, (1 - 3/(4 * (first_
 intense_dat$vi <- replmiss(intense_dat$vi, with(intense_dat, 1/first_n + 1/third_n + yi^2/(2*(first_n + third_n))))
 ```
 
+Coerce moderators into factor variables
+```{r intense_factors}
+intense_dat$clinical_mod <- as.factor(intense_dat$clinical_mod)
+intense_dat$emo_mod <- as.factor(intense_dat$emo_mod)
+intense_dat$persp_mod <- as.factor(intense_dat$persp_mod)
+```
+
+Check what the factor levels are
+```{r intense_levels}
+levels(intense_dat$clinical_mod)
+levels(intense_dat$emo_mod)
+levels(intense_dat$persp_mod)
+```
+
+Control groups should be equivalent to no clinical sample studies. As such, these two levels will be collapsed
+```{r}
+intense_dat$clinical_mod <- fct_recode(intense_dat$clinical_mod, No = "No", No = "Control Group")
+```
+
+Relevel perspective taking and the emotional moderator so that spontaneous and no emotional cue are at level 1. 
+```{r}
+intense_dat$persp_mod <- relevel(intense_dat$persp_mod, "Spontaneous (naturalistic)")
+intense_dat$emo_mod <- relevel(intense_dat$emo_mod, "No")
+```
+
+
 ### Postive Emotion Data
 
 ```{r positive_data}
@@ -191,15 +239,16 @@ Calculate the effect sizes for the Negative Emotion data
 neg_dat <- escalc("SMD", m1i = first_mean, m2i = third_mean, sd1i = first_sd, sd2i = third_sd, n1i = first_n, n2i = third_n, data = neg_dat)
 ```
 
-### Univariate Analysis
+
+## Univariate Analysis
 
 Decided to break with my original multivariate analysis plan for the sake of the write up. Will come back to this afterwards and do a multivariate analysis and evaluate whether this effects the results. 
 
 In line with part of the original plan, all models will be random effects
 
-#### Vividness
+### Vividness
 
-##### Perspective Type
+#### Perspective Type
 
 Perspective taking type as a moderator
 ```{r}
@@ -208,7 +257,7 @@ summary(vivid_pmod)
 forest(vivid_pmod, addfit = T)
 ```
 
-##### Emotional Cues
+#### Emotional Cues
 ```{r}
 vivid_emo <- rma(yi, vi, mods = ~ emo_mod, data = vivid_dat)
 summary(vivid_emo)
@@ -216,9 +265,9 @@ forest(vivid_emo)
 ```
 
 
-#### Emotional Intensity
+### Emotional Intensity
 
-##### Perspective Type
+#### Perspective Type
 ```{r}
 intense_pmod <- rma(yi, vi, mods = ~ persp_mod, data = intense_dat)
 summary(intense_pmod)
@@ -228,5 +277,5 @@ forest(intense_pmod)
 ```{r}
 intense_emo <- rma(yi, vi, mods = ~ emo_mod, data = intense_dat)
 summary(intense_emo)
+forest(intense_emo)
 ```
-
