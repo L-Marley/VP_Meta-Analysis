@@ -139,6 +139,27 @@ Calculate the effect sizes for the Emotional Intensity data
 intense_dat <- escalc("SMD", m1i = first_mean, m2i = third_mean, sd1i = first_sd, sd2i = third_sd, n1i = first_n, n2i = third_n, data = intense_dat)
 ```
 
+The same approach for imputing study 28's effect sizes without the SDs will be followed as the vividness dv. This time simply done within one chunk:
+```{r intense_impute}
+# extract the t-values into a new column
+intense_dat$tval <- str_extract(intense_dat$Emotional.Intensity...Between_Test, tval_pat)
+
+# treat these as numeric values
+intense_dat$tval <- as.numeric(intense_dat$tval)
+
+# initialise an empty cohen's d variable
+intense_dat$dval[c(1:9)] <- NA
+
+# use replace missing function from metafor to calculate cohen's d 
+intense_dat$dval <- replmiss(intense_dat$dval, with(intense_dat, tval * sqrt(1/first_n + 1/third_n)))
+
+# convert Cohen's d to Hedge's g
+intense_dat$yi <- replmiss(intense_dat$yi, with(intense_dat, (1 - 3/(4 * (first_n + third_n - 2) - 1)) * dval))
+
+# calculate sample variance
+intense_dat$vi <- replmiss(intense_dat$vi, with(intense_dat, 1/first_n + 1/third_n + yi^2/(2*(first_n + third_n))))
+```
+
 ### Postive Emotion Data
 
 ```{r positive_data}
@@ -173,3 +194,39 @@ neg_dat <- escalc("SMD", m1i = first_mean, m2i = third_mean, sd1i = first_sd, sd
 ### Univariate Analysis
 
 Decided to break with my original multivariate analysis plan for the sake of the write up. Will come back to this afterwards and do a multivariate analysis and evaluate whether this effects the results. 
+
+In line with part of the original plan, all models will be random effects
+
+#### Vividness
+
+##### Perspective Type
+
+Perspective taking type as a moderator
+```{r}
+vivid_pmod <- rma(yi = yi, vi = vi, mods = ~ persp_mod, data = vivid_dat)
+summary(vivid_pmod)
+forest(vivid_pmod, addfit = T)
+```
+
+##### Emotional Cues
+```{r}
+vivid_emo <- rma(yi, vi, mods = ~ emo_mod, data = vivid_dat)
+summary(vivid_emo)
+forest(vivid_emo)
+```
+
+
+#### Emotional Intensity
+
+##### Perspective Type
+```{r}
+intense_pmod <- rma(yi, vi, mods = ~ persp_mod, data = intense_dat)
+summary(intense_pmod)
+forest(intense_pmod)
+```
+
+```{r}
+intense_emo <- rma(yi, vi, mods = ~ emo_mod, data = intense_dat)
+summary(intense_emo)
+```
+
