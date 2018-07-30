@@ -296,7 +296,7 @@ In line with part of the original plan, all models will be random effects.
 
 #### Base Model
 
-```{r}
+```{r vivid_model}
 vivid_base <- rma(yi, vi, data = vivid_dat, test = "knha")
 summary(vivid_base)
 ```
@@ -308,52 +308,51 @@ forest(vivid_base, addfit = T, slab = vivid_dat$Authors, cex = .8)
 #### Perspective Type
 
 Check the levels of perspective taking and assign the contrasts
-```{r}
+```{r vivid_pcontrasts}
 levels(vivid_dat$persp_mod)
 contrasts(vivid_dat$persp_mod) <- cbind(spon_vs_force, deli_vs_shift)
 ```
 
+```{r vivid_pmodsN}
+table(vivid_dat$persp_mod)
+```
+
 Running the model
-```{r}
+```{r vivid_pmodel}
 vivid_pmod <- rma(yi = yi, vi = vi, mods = ~ persp_mod, data = vivid_dat, test = "knha")
 summary(vivid_pmod)
 ```
 
-```{r}
-table(vivid_dat$persp_mod)
-```
-
-```{r vivid_pmod_for}
+```{r vivid_pfor}
 # forest(vivid_pmod, addfit = T, slab = vivid_dat$Authors, cex = .7)
 ```
 
 #### Emotional Cues
 
 Relevels the emotional moderators so it'll match the contrast coding and counts the k per group
-```{r vivid_emo_modsN}
+```{r vivid_emodsN}
 vivid_dat$emo_mod <- relevel(vivid_dat$emo_mod, ref = "No")
 table(vivid_dat$emo_mod)
 ```
 
 Set up orthagonal contrasts
-```{r vivid_emo_contrasts}
+```{r vivid_econtrasts}
 contrasts(vivid_dat$emo_mod) <- cbind(none_vs_emo, pos_vs_neg)
 ```
 
-
 This analysis looks at all studies together, implicitly combining the two clinical and 10 non-clinical samples.
-```{r}
+```{r vivid_emod}
 vivid_emo <- rma(yi, vi, mods = ~ emo_mod, data = vivid_dat)
 summary(vivid_emo)
 ```
 
-```{r}
+```{r vivid_efor}
 #forest(vivid_emo, addfit = T, cex = .7)
 ```
 
 As a partial sensitivity analysis will exclude the two clinical studies and rerun the model. Although based on the forest plot they don't appear to be substantially different and I don't expect any differences.
 
-```{r}
+```{r vivid_emod2}
 vivid_emo2 <- 
   vivid_dat %>%
   filter(., clinical_mod == "No") %>%
@@ -367,11 +366,15 @@ The AIC, and BIC indicate the model without these studies in is a slighter bette
 
 #### Base Model
 
-```{r}
+```{r intense_mod}
 intense_base <- rma(yi, vi, data = intense_dat, method = "REML", test = "knha")
 summary(intense_base)
-forest(intense_base)
 ```
+
+```{r intense_for}
+
+```
+
 
 ```{r}
 rstudent.rma.uni()
