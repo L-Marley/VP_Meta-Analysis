@@ -517,3 +517,66 @@ pp. 746
 t_test2(65.83, 68.28, 18.95, 19.12, 78, 55)
 ```
 
+## 383
+Wang et al. (2017)
+
+### Frequencies
+
+15 schizophrenic ps, 9 memories, proportion that are 1st person 
+pp. 226
+```{r}
+# number of 1st person memories
+(15*9)*.8969
+# number of 3rd person memories
+(15*9) - ((15*9)*.8969)
+# total number of memories
+(15*9)
+```
+Schizophrenia ps n of 1st person = 121
+Schizophrenic ps n of 3rd person = 14
+
+15 control ps, 9 memories, proportion that're 1st person
+```{r}
+# number of 1st person memories
+(15*9)*.9326
+# number of 3rd person memories
+(15*9) - ((15*9)*.9326)
+# total number of memories
+(15*9)
+```
+Control ps n of 1st person = 126
+Control ps n of 3rd person = 9
+
+## 44
+Sutin (2006)
+
+Uses the MEQ 
+
+### Independent t-tests
+All information sourced from pp.83
+
+Vividness, spontaneous
+```{r}
+t_test2(4.2, 3.9, .7, .7, 491, 159)
+```
+
+Emotional Intensity, spontaneous
+```{r}
+t_test2(4.0, 3.7, .8, .9, 491, 159)
+```
+
+Visual Perspective, spontaneous single scale (higher values indicate greater use of 1st person)
+```{r}
+t_test2(4.1, 2.8, .7, 1, 491, 159)
+```
+
+Sensory Detail/Re-experiencing, spontaneous
+```{r}
+t_test2(3.6, 3.3, .6, .7, 491, 159)
+```
+
+Sharing/Rehearsal, spontaneous
+```{r}
+t_test2(2.9, 2.7, 1.1, 1.1, 491, 159)
+```
+

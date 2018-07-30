@@ -36,7 +36,6 @@ qual_tidy <-
   filter(Analysis_Level == "Participants") %>%
   filter(Design_1 == "Experimental")
 ```
-
 ### Vividness Data
 
 Only selects the variables to calculate effect sizes from and those that are necessary to identify the research source and potential moderators (emotional cues, clinical samples, and perspective nature).
@@ -48,7 +47,7 @@ Finally, it drops studies with any na values within these variables. Note, this 
 ```{r vividness_data}
 vivid_dat <- 
   qual_tidy %>%
-  select(Pub_ID:Study_ID, `Clinical_Mod - Selected Choice`, Emo_Mod, Perspective_Nature, `Outcome - Vividness`, `Vividness - First_Mean`:`Vividness - Between_Test`, -c(`Vividness - First_Corr`, `Vividness - Third_Corr`, `Vividness - What was the correlation with [Field-1] perspective?`)) %>%
+  select(Authors:Pub_Year, Pub_ID:Study_ID, `Clinical_Mod - Selected Choice`, Emo_Mod, Perspective_Nature, `Outcome - Vividness`, `Vividness - First_Mean`:`Vividness - Between_Test`, -c(`Vividness - First_Corr`, `Vividness - Third_Corr`, `Vividness - What was the correlation with [Field-1] perspective?`)) %>%
   rename(outcome = `Outcome - Vividness`, first_mean = `Vividness - First_Mean`, third_mean = `Vividness - Third_Mean`, first_sd = `Vividness - First_SD`, third_sd = `Vividness - Third_SD`, first_n = `Vividness - First_N`, third_n = `Vividness - Third_N`, clinical_mod = `Clinical_Mod - Selected Choice`, emo_mod = Emo_Mod, persp_mod = Perspective_Nature) %>%
   drop_na()
 ```
@@ -65,6 +64,8 @@ vivid_dat$third_sd<- na_if(vivid_dat$third_sd, -99.00)
 vivid_dat$first_n <- na_if(vivid_dat$first_n, -99)
 vivid_dat$third_n <- na_if(vivid_dat$third_n, -99)
 ```
+
+#### Effect sizes
 
 Calculate the effect sizes for the vividness data
 ```{r vivid_effsiz}
@@ -98,9 +99,7 @@ vivid_dat$dval[c(1:11)] <- NA
 
 # use replace missing function from metafor to calculate cohen's d (all will be calculated for now although only 28 is of interest)
 vivid_dat$dval <- replmiss(vivid_dat$dval, with(vivid_dat, tval * sqrt(1/first_n + 1/third_n)))
-```
-
-Note to self: Ought to retrospectively convert all the t-values to the appropriate sign
+``` 
 
 Now we can covert Cohen's d to Hedge's g to impute into the yi variable, crucially only the missing value it's possible to impute (28) will be replaced. Followed by imputing the sampling variance for the estimate (vi)
 
@@ -112,6 +111,8 @@ vivid_dat$vi <- replmiss(vivid_dat$vi, with(vivid_dat, 1/first_n + 1/third_n + y
 An estimate of the effect size could be done in a similar way for publication 1. IF we assume group sizes. The information for this study was sourced from study 3 in the paper. (Note to self, check where study id 1 has gone for this paper)
 
 Amendment: Returning to the paper revealed that this is a within-subjects design. Using participants who'd reported at least one field and one observer memory. As such, this approach is not appropriate. 
+
+#### Moderators
 
 Following chunk specifies the moderators as being factors rather than relying on functions to coerce them from character to factor variables.
 ```{r vivid_factors}
@@ -132,6 +133,21 @@ Relevel the perspective moderator so that spontaneous perspective taking is the 
 vivid_dat$persp_mod <- relevel(vivid_dat$persp_mod, ref = "Spontaneous (naturalistic)")
 ```
 
+#### Retrospective t-value signs
+
+After the realisation above decided to change the necessary t-value signs here within vividness. 
+Inspecting the data set shows publications: 50, 136, and 63 (spontaneous) should be negatives.
+```{r}
+# Demonstrate current t-values etc
+vivid_dat$Vividness...Between_Test[3]
+vivid_dat$Vividness...Between_Test[8]
+vivid_dat$Vividness...Between_Test[11]
+# Replace with the correct negative t-values
+vivid_dat$Vividness...Between_Test[3] <- "t(77.68) = -0.75, p = .458"
+vivid_dat$Vividness...Between_Test[8] <- "t(41.62) = -2.28, p = .028"
+vivid_dat$Vividness...Between_Test[11] <- "t(121.04) = -0.94, p = .349"
+```
+
 ### Emotional Intensity Data
 
 Follows exactky the same pattern and reasoning as the vividness data 
@@ -139,7 +155,7 @@ Follows exactky the same pattern and reasoning as the vividness data
 ```{r intense_data}
 intense_dat <- 
   qual_tidy %>%
-  select(Pub_ID:Study_ID, `Clinical_Mod - Selected Choice`, Emo_Mod, Perspective_Nature, `Outcome - Emotional Intensity`, `Emotional Intensity - First_Mean`:`Emotional Intensity - Between_Test`, -c(`Emotional Intensity - First_Corr`, `Emotional Intensity - Third_Corr`, `Emotional Intensity - What was the correlation with [Field-1] perspective?`)) %>%
+  select(Authors:Pub_Year, Pub_ID:Study_ID, `Clinical_Mod - Selected Choice`, Emo_Mod, Perspective_Nature, `Outcome - Emotional Intensity`, `Emotional Intensity - First_Mean`:`Emotional Intensity - Between_Test`, -c(`Emotional Intensity - First_Corr`, `Emotional Intensity - Third_Corr`, `Emotional Intensity - What was the correlation with [Field-1] perspective?`)) %>%
   rename(outcome = `Outcome - Emotional Intensity`, first_mean = `Emotional Intensity - First_Mean`, third_mean = `Emotional Intensity - Third_Mean`, first_sd = `Emotional Intensity - First_SD`, third_sd = `Emotional Intensity - Third_SD`, first_n = `Emotional Intensity - First_N`, third_n = `Emotional Intensity - Third_N`, clinical_mod = `Clinical_Mod - Selected Choice`, emo_mod = Emo_Mod, persp_mod = Perspective_Nature) %>%
   drop_na()
 ```
@@ -155,6 +171,8 @@ intense_dat$third_sd<- na_if(intense_dat$third_sd, -99.00)
 intense_dat$first_n <- na_if(intense_dat$first_n, -99)
 intense_dat$third_n <- na_if(intense_dat$third_n, -99)
 ```
+
+#### Effect sizes
 
 Calculate the effect sizes for the Emotional Intensity data
 ```{r intense_effsiz}
@@ -182,6 +200,8 @@ intense_dat$yi <- replmiss(intense_dat$yi, with(intense_dat, (1 - 3/(4 * (first_
 intense_dat$vi <- replmiss(intense_dat$vi, with(intense_dat, 1/first_n + 1/third_n + yi^2/(2*(first_n + third_n))))
 ```
 
+#### Moderators
+
 Coerce moderators into factor variables
 ```{r intense_factors}
 intense_dat$clinical_mod <- as.factor(intense_dat$clinical_mod)
@@ -207,6 +227,16 @@ intense_dat$persp_mod <- relevel(intense_dat$persp_mod, "Spontaneous (naturalist
 intense_dat$emo_mod <- relevel(intense_dat$emo_mod, "No")
 ```
 
+#### Retrospective t-value signs
+Publication 50 and 379 need their signs altering
+```{r}
+# Show current string
+intense_dat$Emotional.Intensity...Between_Test[3]
+intense_dat$Emotional.Intensity...Between_Test[6]
+# Replace string with correct negative values
+intense_dat$Emotional.Intensity...Between_Test[3] <- "t(76.74) = -0.18, p = .859"
+intense_dat$Emotional.Intensity...Between_Test[6] <- "t(72) = -0.62, p = .537"
+```
 
 ### Postive Emotion Data
 
@@ -244,17 +274,52 @@ neg_dat <- escalc("SMD", m1i = first_mean, m2i = third_mean, sd1i = first_sd, sd
 
 Decided to break with my original multivariate analysis plan for the sake of the write up. Will come back to this afterwards and do a multivariate analysis and evaluate whether this effects the results. 
 
-In line with part of the original plan, all models will be random effects
+In line with part of the original plan, all models will be random effects.
+
+Because I'm switching from this multilevel multivariate approach the data are no longer in an appropriate structure. The publication ID for multiple outcome type studies will be made decimal and the study ID dropped.
+
+This is not necessary for the intensity data as no multiple publications per study.
+
+```{r univariate_structure}
+# Vividness Data
+vivid_dat$Pub_ID[7] <- 379.5
+vivid_dat$Pub_ID[11] <- 63.5
+vivid_dat <- 
+  vivid_dat %>% 
+  select(-Study_ID)
+```
 
 ### Vividness
+
+#### Base Model
+
+```{r}
+vivid_base <- rma(yi, vi, data = vivid_dat, test = "knha")
+summary(vivid_base)
+```
 
 #### Perspective Type
 
 Perspective taking type as a moderator
 ```{r}
-vivid_pmod <- rma(yi = yi, vi = vi, mods = ~ persp_mod, data = vivid_dat)
+vivid_pmod <- rma(yi = yi, vi = vi, mods = ~ persp_mod, data = vivid_dat, test = "knha")
 summary(vivid_pmod)
-forest(vivid_pmod, addfit = T)
+```
+
+```{r vivid_pmod_for}
+vivid_labs <- c("McIsaac & Eich, 2002", 
+                "Sutin & Robins, 2010", 
+                "Bernsten & Rubin, 2006", 
+                "Marcotti & St Jacques, 2017", 
+                "Nigro and Neisser, 1983", 
+                "Vella and Moulds, 2014, s.1", 
+                "Vella and Moulds, 2014, s.2", 
+                "Seikiguchi & Nonaka, 2014", 
+                "Sutin & Robins, 2010", 
+                "Williams and Moulds, 2008, s.1", 
+                "Williams and Moulds, 2008, s.2"
+                )
+forest(vivid_pmod, addfit = T, slab = vivid_labs, cex = .7)
 ```
 
 #### Emotional Cues
@@ -262,8 +327,12 @@ This analysis looks at all studies together, implicitly combining the two clinic
 ```{r}
 vivid_emo <- rma(yi, vi, mods = ~ emo_mod, data = vivid_dat)
 summary(vivid_emo)
-forest(vivid_emo)
 ```
+
+```{r}
+forest(vivid_emo, slab = vivid_labs, addfit = T, cex = .7)
+```
+
 
 As a sensitivity analysis will exclude the two clinical studies and rerun the model. Although based on the forest plot they don't appear to be substantially different and I don't expect any differences.
 
@@ -278,6 +347,90 @@ forest(vivid_emo2)
 The AIC, BIC, and AICc indicate the model without these studies in is a slighter better fit. Notably, none of the conclusions that may be drawn from the model are changed.
 
 ### Emotional Intensity
+
+#### Base Model
+
+```{r}
+intense_base <- rma(yi, vi, data = intense_dat, method = "REML", test = "knha")
+summary(intense_base)
+forest(intense_base)
+```
+
+```{r}
+rstudent.rma.uni()
+```
+
+
+```{r}
+intense_noout <- 
+  intense_dat[-c(1),] %>%
+  rma(yi, vi, data = ., method = "REML", test = "knha")
+summary(intense_noout)  
+forest(intense_noout)
+```
+
+Because the number of studies (k) is relatively small, the convergence on the 'true' weights will be in some doubt, and the assumptions of typical esitmation are hard to defend (i.e. ML, REML etc).
+Alternative approaches to variance estimation include: 
+* quasi-F / Hartung and Knapp - also reliant on parametric assumptions
+* Huber-White - not reliant on parametric assumptions, however, the theory behind it requires large k
+
+The following chunks compare the estimates of these approaches
+
+```{r}
+# Conventional approach
+
+res.std <- list()
+ 
+res.std$FE   <- rma(yi, vi, data = intense_dat, digits = 3, method = "FE")
+res.std$ML   <- rma(yi, vi, data = intense_dat, digits = 3, method = "ML")
+res.std$REML <- rma(yi, vi, data = intense_dat, digits = 3, method = "REML")
+res.std$DL   <- rma(yi, vi, data = intense_dat, digits = 3, method = "DL")
+res.std$HE   <- rma(yi, vi, data = intense_dat, digits = 3, method = "HE")
+ 
+round(t(sapply(res.std, function(x) c(tau2=x$tau2, mu=x$b, se=x$se, z=x$zval, ci.lb=x$ci.lb, ci.ub=x$ci.ub))), 3)
+```
+
+```{r}
+# Hartung and Knapp's approach
+intense.knha <- list()
+ 
+intense.knha$FE   <- rma(yi, vi, data= intense_dat, digits=3, method="FE", test="knha")
+intense.knha$ML   <- rma(yi, vi, data=intense_dat, digits=3, method="ML", test="knha")
+intense.knha$REML <- rma(yi, vi, data=intense_dat, digits=3, method="REML", test="knha")
+intense.knha$DL   <- rma(yi, vi, data=intense_dat, digits=3, method="DL", test="knha")
+intense.knha$HE   <- rma(yi, vi, data=intense_dat, digits=3, method="HE", test="knha")
+ 
+round(t(sapply(intense.knha, function(x) c(tau2=x$tau2, mu=x$b, se=x$se, z=x$zval, ci.lb=x$ci.lb, ci.ub=x$ci.ub))), 3)
+```
+
+```{r}
+# Huber-White approach, with small sample adjustment
+
+intense.hw <- list()
+
+intense.hw$FE   <- robust(res.std$FE,   cluster=intense_dat$Pub_ID, adjust=TRUE)
+intense.hw$ML   <- robust(res.std$ML,   cluster=intense_dat$Pub_ID, adjust=TRUE)
+intense.hw$REML <- robust(res.std$REML, cluster=intense_dat$Pub_ID, adjust=TRUE)
+intense.hw$DL   <- robust(res.std$DL,   cluster=intense_dat$Pub_ID, adjust=TRUE)
+intense.hw$HE   <- robust(res.std$HE,   cluster=intense_dat$Pub_ID, adjust=TRUE)
+ 
+intense_hw <- as_tibble(round(t(sapply(intense.hw, function(x) c(tau2=x$tau2, mu=x$b, se=x$se, t=x$tval, ci.lb=x$ci.lb, ci.ub=x$ci.ub))), 3))
+intense_hw$est  <- c("FE", "ML", "REML", "DL", "HE")
+intense_hw %>% select(., est, tau2, mu, se , ci.lb, ci.ub)
+```
+
+```{r}
+intense_labs <- c("McIsaac & Eich, 2002", 
+                  "Sutin & Robins, 2010", 
+                  "Bernsten & Rubin, 2006", 
+                  "Robinaugh & McNally, 2010", 
+                  "Marcotti & St Jacques, 2017", 
+                  "Vella & Moulds, 2014", 
+                  "Sutin & Robins, 2010", 
+                  "Wisco & Nolen-Hoeksema, 2011", 
+                  "Wisco & Nolen-Hoeksema, 2011, clinical"
+                  )
+```
 
 #### Perspective Type
 ```{r}
