@@ -294,16 +294,53 @@ In line with part of the original plan, all models will be random effects.
 
 ### Vividness
 
-#### Base Model
+#### Baseline Model
 
-```{r vivid_model}
-vivid_base <- rma(yi, vi, data = vivid_dat, test = "knha")
-summary(vivid_base)
+##### Analysis
+
+```{r vivid_bmod}
+vivid_bmod <- rma(yi, vi, data = vivid_dat, test = "knha")
+summary(vivid_bmod)
 ```
 
-```{r vivid_for}
-forest(vivid_base, addfit = T, slab = vivid_dat$Authors, cex = .8)
+Forest plot for the baseline vividness model
+```{r vivid_bfor}
+# Define study labels
+viv_bfor_labs <- c("McIsaac & Eich, 2002",
+               "Sutin & Robins, 2010 (s.1)",
+               "Bernsten & Rubin, 2006", 
+               "Marcotti & St Jacques, 2017",
+               "Nigro & Neisser, 1983",
+               "Vella & Moulds, 2014 (s.1)",
+               "Vella & Moulds, 2014 (s.2)",
+               "Sekiguchi & Nonaka, 2014",
+               "Sutin & Robins, 2010 (s.2)", 
+               "Williams & Moulds, (s.1)",
+               "Williams & Moulds, (s.2)",
+               "Rice, 2007",
+               "Sutin, 2006"
+)
+
+# Run and show the forest plot
+vivid_bfor <- forest(vivid_bmod, addfit = T, slab = viv_bfor_labs, cex = .8)
 ```
+
+##### Model Diagnostics
+
+Checking for influential cases and potential outliers
+
+```{r}
+vivid_binf <- influence(vivid_bmod)
+plot(vivid_binf, layout = c(4, 2))
+```
+The 8th study in the model (Sekiguchi & Nonaka, 2017) appears to be an outlier and influential on the other cases.
+
+This matches with what is shown in the forest plot with their study suggesting third-person perspective is more vivid and the confidence interval does not cross zero. 
+
+Having checked this paper again and looking at the values this is due to a coding error by myself. 
+
+Study 2 is also contributing greatly to QF. 
+
 
 #### Perspective Type
 
@@ -323,6 +360,7 @@ vivid_pmod <- rma(yi = yi, vi = vi, mods = ~ persp_mod, data = vivid_dat, test =
 summary(vivid_pmod)
 ```
 
+Forest plot for the nature of perspective taking moderator
 ```{r vivid_pfor}
 # forest(vivid_pmod, addfit = T, slab = vivid_dat$Authors, cex = .7)
 ```
@@ -364,15 +402,29 @@ The AIC, and BIC indicate the model without these studies in is a slighter bette
 
 ### Emotional Intensity
 
-#### Base Model
+#### Base Model - Analysis
 
-```{r intense_mod}
+```{r intense_bmod}
 intense_base <- rma(yi, vi, data = intense_dat, method = "REML", test = "knha")
 summary(intense_base)
 ```
 
-```{r intense_for}
+```{r intense_bfor}
+# Define the study labels
+inten_bfor_labs <- c("McIsaac & Eich, 2002",
+                     "Sutin & Robins, 2010 (s.1)", 
+                     "Bernsten & Rubin, 2006",
+                     "Robinaugh & McNally, 2010",
+                     "Marcotti & St Jacques, 2017",
+                     "Vella & Moulds, 2014", 
+                     "Sutin & Robins, 2010 (s.2)",
+                     "Wisco & Nolen-Hoeksema, 2011 (s.1)",
+                     "Wisco & Nolen-Hoeksema, 2011 (s.2)",
+                     "Rice, 2007",
+                     "Sutin, 2006")
 
+# Run the forest plot
+intense_bfor <- forest(intense_base, slab = inten_bfor_labs, cex = .7)
 ```
 
 
