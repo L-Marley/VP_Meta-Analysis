@@ -47,8 +47,32 @@ Finally, it drops studies with any na values within these variables. Note, this 
 ```{r vividness_data}
 vivid_dat <- 
   qual_tidy %>%
-  select(Authors:Pub_Year, Pub_ID:Study_ID, `Clinical_Mod - Selected Choice`, Emo_Mod, Perspective_Nature, `Outcome - Vividness`, `Vividness - First_Mean`:`Vividness - Between_Test`, -c(`Vividness - First_Corr`, `Vividness - Third_Corr`, `Vividness - What was the correlation with [Field-1] perspective?`)) %>%
-  rename(outcome = `Outcome - Vividness`, first_mean = `Vividness - First_Mean`, third_mean = `Vividness - Third_Mean`, first_sd = `Vividness - First_SD`, third_sd = `Vividness - Third_SD`, first_n = `Vividness - First_N`, third_n = `Vividness - Third_N`, clinical_mod = `Clinical_Mod - Selected Choice`, emo_mod = Emo_Mod, persp_mod = Perspective_Nature) %>%
+  select(
+    Authors:Pub_Year, 
+    Pub_ID:Study_ID, 
+    `Clinical_Mod - Selected Choice`, 
+    Emo_Mod, 
+    Perspective_Nature, 
+    `Outcome - Vividness`, 
+    `Vividness - First_Mean`:`Vividness - Between_Test`, 
+    -c(
+      `Vividness - First_Corr`, 
+      `Vividness - Third_Corr`, 
+      `Vividness - What was the correlation with [Field-1] perspective?`
+      )
+    ) %>%
+  rename(
+    outcome = `Outcome - Vividness`, 
+    first_mean = `Vividness - First_Mean`, 
+    third_mean = `Vividness - Third_Mean`, 
+    first_sd = `Vividness - First_SD`, 
+    third_sd = `Vividness - Third_SD`, 
+    first_n = `Vividness - First_N`, 
+    third_n = `Vividness - Third_N`, 
+    clinical_mod = `Clinical_Mod - Selected Choice`, 
+    emo_mod = Emo_Mod, 
+    persp_mod = Perspective_Nature
+    ) %>%
   drop_na()
 ```
 
@@ -79,7 +103,49 @@ none_vs_emo <- c(-2, 1, 1)
 pos_vs_neg <- c(0, -1, 1)
 ```
 
-#### Effect sizes
+## Effect sizes
+
+Amendment to publication 136 following a coding error identified during the model diagnostics (see commit on 09:19 GMT, 31/07/18). The two means and sds sourced were comparing the no perspective change vs perspective change within the session 1 field event, session 2 ratings. As such, it represented spontaneous first person vs shifted third person rather than a spontaneous vs spontaneous comparison as had been coded. 
+
+Notably, I've also only sourced one (perspective change) of two independent samples from this publication the decision of which was pending furher thought.
+
+Beacuse we cannot use change scores (see Morris, 2008) can't do s1 vs s2 comparisons.
+
+Could do: 
+1. 'p.change field s2' vs 'p. change observer s2'. This is comparing two different shifted memories within the same sample. 
+2. 'p. no change field s2' vs 'p. no change observer s2'. This is comparing the two spontaneous recalls within the same sample
+
+Doing so keeps the most recent possible session as prescribed and makes use of both independent samples. 
+
+Note: S2 in the original field memory for p.change should be the shifted third-person.
+```{r}
+# Correcting the means for perspective change group
+vivid_dat$first_mean[8] <- 2.7
+vivid_dat$first_sd[8] <- 0.8
+vivid_dat$third_mean[8] <- 3.1
+vivid_dat$third_sd[8] <- 0.7
+
+# Adding the no change group's study info
+vivid_dat <- add_row(vivid_dat, 
+                     Authors = "Sekiguchi, T., & Nonaka, S.", 
+                     Pub_Year = 2014, 
+                     Pub_ID = 136, 
+                     Study_ID = 1, 
+                     clinical_mod = "No", 
+                     emo_mod = "No", 
+                     outcome = "Vividness", 
+                     persp_mod = "Spontaneous (naturalistic)", 
+                     first_mean = 3.5,
+                     first_sd = 0.5,
+                     first_n = 24,
+                     third_mean = 3.1,
+                     third_sd = 0.8, 
+                     third_n = 24,
+                     `Vividness - Between_Test` = NA)
+
+# correcting the comparison type in p.change sample
+vivid_dat$persp_mod[8] <- "Shifted"
+```
 
 Calculate the effect sizes for the vividness data
 ```{r vivid_effsiz}
@@ -109,7 +175,7 @@ This positive t-value matches the approach taken in the effect size calculations
 
 ```{r}
 # initialise an empty cohen's d variable
-vivid_dat$dval[c(1:13)] <- NA
+vivid_dat$dval[c(1:14)] <- NA
 
 # use replace missing function from metafor to calculate cohen's d (all will be calculated for now although only 28 is of interest)
 vivid_dat$dval <- replmiss(vivid_dat$dval, with(vivid_dat, tval * sqrt(1/first_n + 1/third_n)))
@@ -154,11 +220,9 @@ Inspecting the data set shows publications: 50, 136, and 63 (spontaneous) should
 ```{r}
 # Demonstrate current t-values etc
 vivid_dat$Vividness...Between_Test[3]
-vivid_dat$Vividness...Between_Test[8]
 vivid_dat$Vividness...Between_Test[11]
 # Replace with the correct negative t-values
 vivid_dat$Vividness...Between_Test[3] <- "t(77.68) = -0.75, p = .458"
-vivid_dat$Vividness...Between_Test[8] <- "t(41.62) = -2.28, p = .028"
 vivid_dat$Vividness...Between_Test[11] <- "t(121.04) = -0.94, p = .349"
 ```
 
@@ -169,8 +233,31 @@ Follows exactky the same pattern and reasoning as the vividness data
 ```{r intense_data}
 intense_dat <- 
   qual_tidy %>%
-  select(Authors:Pub_Year, Pub_ID:Study_ID, `Clinical_Mod - Selected Choice`, Emo_Mod, Perspective_Nature, `Outcome - Emotional Intensity`, `Emotional Intensity - First_Mean`:`Emotional Intensity - Between_Test`, -c(`Emotional Intensity - First_Corr`, `Emotional Intensity - Third_Corr`, `Emotional Intensity - What was the correlation with [Field-1] perspective?`)) %>%
-  rename(outcome = `Outcome - Emotional Intensity`, first_mean = `Emotional Intensity - First_Mean`, third_mean = `Emotional Intensity - Third_Mean`, first_sd = `Emotional Intensity - First_SD`, third_sd = `Emotional Intensity - Third_SD`, first_n = `Emotional Intensity - First_N`, third_n = `Emotional Intensity - Third_N`, clinical_mod = `Clinical_Mod - Selected Choice`, emo_mod = Emo_Mod, persp_mod = Perspective_Nature) %>%
+  select(
+    Authors:Pub_Year, 
+    Pub_ID:Study_ID, 
+    `Clinical_Mod - Selected Choice`, 
+    Emo_Mod, 
+    Perspective_Nature, 
+    `Outcome - Emotional Intensity`, 
+    `Emotional Intensity - First_Mean`:`Emotional Intensity - Between_Test`,
+    -c(
+      `Emotional Intensity - First_Corr`, 
+      `Emotional Intensity - Third_Corr`, `
+      Emotional Intensity - What was the correlation with [Field-1] perspective?`
+      )
+    ) %>%
+  rename(
+    outcome = `Outcome - Emotional Intensity`, 
+    first_mean = `Emotional Intensity - First_Mean`, 
+    third_mean = `Emotional Intensity - Third_Mean`, 
+    first_sd = `Emotional Intensity - First_SD`, 
+    third_sd = `Emotional Intensity - Third_SD`, 
+    first_n = `Emotional Intensity - First_N`, 
+    third_n = `Emotional Intensity - Third_N`, 
+    clinical_mod = `Clinical_Mod - Selected Choice`, 
+    emo_mod = Emo_Mod, persp_mod = Perspective_Nature
+    ) %>%
   drop_na()
 ```
 
@@ -259,8 +346,29 @@ intense_dat$Emotional.Intensity...Between_Test[6] <- "t(72) = -0.62, p = .537"
 ```{r positive_data}
 posit_dat <- 
   qual_tidy %>%
-  select(Pub_ID:Study_ID, `Clinical_Mod - Selected Choice`, Emo_Mod, Perspective_Nature, `Outcome - Positive Emotion`, `Positive Emotion - First_Mean`:`Positive Emotion - Between_Test`, -c(`Positive Emotion - First_Corr`, `Positive Emotion - Third_Corr`, `Positive Emotion - What was the correlation with [Field-1] perspective?`)) %>%
-  rename(outcome = `Outcome - Positive Emotion`, first_mean = `Positive Emotion - First_Mean`, third_mean = `Positive Emotion - Third_Mean`, first_sd = `Positive Emotion - First_SD`, third_sd = `Positive Emotion - Third_SD`, first_n = `Positive Emotion - First_N`, third_n = `Positive Emotion - Third_N`, clinical_mod = `Clinical_Mod - Selected Choice`, emo_mod = Emo_Mod, persp_mod = Perspective_Nature) %>%
+  select(
+    Pub_ID:Study_ID, 
+    `Clinical_Mod - Selected Choice`, 
+    Emo_Mod, Perspective_Nature, 
+    `Outcome - Positive Emotion`, 
+    `Positive Emotion - First_Mean`:`Positive Emotion - Between_Test`,
+    -c(
+      `Positive Emotion - First_Corr`, 
+      `Positive Emotion - Third_Corr`, 
+      `Positive Emotion - What was the correlation with [Field-1] perspective?`
+      )
+    ) %>%
+  rename(
+    outcome = `Outcome - Positive Emotion`, 
+    first_mean = `Positive Emotion - First_Mean`, 
+    third_mean = `Positive Emotion - Third_Mean`, 
+    first_sd = `Positive Emotion - First_SD`, 
+    third_sd = `Positive Emotion - Third_SD`, 
+    first_n = `Positive Emotion - First_N`, 
+    third_n = `Positive Emotion - Third_N`, 
+    clinical_mod = `Clinical_Mod - Selected Choice`, 
+    emo_mod = Emo_Mod, persp_mod = Perspective_Nature
+    ) %>%
   drop_na()
 ```
 
@@ -271,8 +379,27 @@ This leaves only 3 studies for postiive emotion, with only two independent sampl
 ```{r negative_data}
 neg_dat <- 
   qual_tidy %>%
-  select(Pub_ID:Study_ID, `Clinical_Mod - Selected Choice`, Emo_Mod, Perspective_Nature, `Outcome - Negative Emotion`, `Negative Emotion - First_Mean`:`Negative Emotion - Between_Test`, -c(`Negative Emotion - First_Corr`, `Negative Emotion - Third_Corr`, `Negative Emotion - What was the correlation with [Field-1] perspective?`)) %>%
-  rename(outcome = `Outcome - Negative Emotion`, first_mean = `Negative Emotion - First_Mean`, third_mean = `Negative Emotion - Third_Mean`, first_sd = `Negative Emotion - First_SD`, third_sd = `Negative Emotion - Third_SD`, first_n = `Negative Emotion - First_N`, third_n = `Negative Emotion - Third_N`, clinical_mod = `Clinical_Mod - Selected Choice`, emo_mod = Emo_Mod, persp_mod = Perspective_Nature) %>%
+  select(
+    Pub_ID:Study_ID, 
+    `Clinical_Mod - Selected Choice`, 
+    Emo_Mod, Perspective_Nature, 
+    `Outcome - Negative Emotion`, 
+    `Negative Emotion - First_Mean`:`Negative Emotion - Between_Test`,
+    -c(`Negative Emotion - First_Corr`, 
+       `Negative Emotion - Third_Corr`, `
+       Negative Emotion - What was the correlation with [Field-1] perspective?`
+       )
+    ) %>%
+  rename(outcome = `Outcome - Negative Emotion`, 
+         first_mean = `Negative Emotion - First_Mean`, 
+         third_mean = `Negative Emotion - Third_Mean`, 
+         first_sd = `Negative Emotion - First_SD`, 
+         third_sd = `Negative Emotion - Third_SD`, 
+         first_n = `Negative Emotion - First_N`, 
+         third_n = `Negative Emotion - Third_N`, 
+         clinical_mod = `Clinical_Mod - Selected Choice`, 
+         emo_mod = Emo_Mod, persp_mod = Perspective_Nature
+         ) %>%
   drop_na()
 ```
 
@@ -306,20 +433,22 @@ summary(vivid_bmod)
 Forest plot for the baseline vividness model
 ```{r vivid_bfor}
 # Define study labels
-viv_bfor_labs <- c("McIsaac & Eich, 2002",
-               "Sutin & Robins, 2010 (s.1)",
-               "Bernsten & Rubin, 2006", 
-               "Marcotti & St Jacques, 2017",
-               "Nigro & Neisser, 1983",
-               "Vella & Moulds, 2014 (s.1)",
-               "Vella & Moulds, 2014 (s.2)",
-               "Sekiguchi & Nonaka, 2014",
-               "Sutin & Robins, 2010 (s.2)", 
-               "Williams & Moulds, (s.1)",
-               "Williams & Moulds, (s.2)",
-               "Rice, 2007",
-               "Sutin, 2006"
-)
+viv_bfor_labs <- c(
+  "McIsaac & Eich, 2002",
+  "Sutin & Robins, 2010 (s.1)",
+  "Bernsten & Rubin, 2006",
+  "Marcotti & St Jacques, 2017",
+  "Nigro & Neisser, 1983",
+  "Vella & Moulds, 2014 (s.1)",
+  "Vella & Moulds, 2014 (s.2)",
+  "Sekiguchi & Nonaka, 2014 (s.1)",
+  "Sutin & Robins, 2010 (s.2)",
+  "Williams & Moulds, (s.1)",
+  "Williams & Moulds, (s.2)",
+  "Rice, 2007",
+  "Sutin, 2006",
+  "Sekiguchi & Nonaka, 2014 (s.2)"
+  )
 
 # Run and show the forest plot
 vivid_bfor <- forest(vivid_bmod, addfit = T, slab = viv_bfor_labs, cex = .8)
@@ -333,11 +462,7 @@ Checking for influential cases and potential outliers
 vivid_binf <- influence(vivid_bmod)
 plot(vivid_binf, layout = c(4, 2))
 ```
-The 8th study in the model (Sekiguchi & Nonaka, 2017) appears to be an outlier and influential on the other cases.
-
-This matches with what is shown in the forest plot with their study suggesting third-person perspective is more vivid and the confidence interval does not cross zero. 
-
-Having checked this paper again and looking at the values this is due to a coding error by myself. 
+The 8th study in the model (Sekiguchi & Nonaka, 2017) was an outlier and influential on the other cases. However, this was a coding error by myself and has now been amended in the effect size section as of 10:51 GMT 31/07/18.
 
 Study 2 is also contributing greatly to QF. 
 
