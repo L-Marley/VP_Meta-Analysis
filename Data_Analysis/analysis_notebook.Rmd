@@ -243,8 +243,8 @@ intense_dat <-
     `Emotional Intensity - First_Mean`:`Emotional Intensity - Between_Test`,
     -c(
       `Emotional Intensity - First_Corr`, 
-      `Emotional Intensity - Third_Corr`, `
-      Emotional Intensity - What was the correlation with [Field-1] perspective?`
+      `Emotional Intensity - Third_Corr`, 
+      `Emotional Intensity - What was the correlation with [Field-1] perspective?`
       )
     ) %>%
   rename(
@@ -256,7 +256,8 @@ intense_dat <-
     first_n = `Emotional Intensity - First_N`, 
     third_n = `Emotional Intensity - Third_N`, 
     clinical_mod = `Clinical_Mod - Selected Choice`, 
-    emo_mod = Emo_Mod, persp_mod = Perspective_Nature
+    emo_mod = Emo_Mod, 
+    persp_mod = Perspective_Nature
     ) %>%
   drop_na()
 ```
@@ -367,7 +368,8 @@ posit_dat <-
     first_n = `Positive Emotion - First_N`, 
     third_n = `Positive Emotion - Third_N`, 
     clinical_mod = `Clinical_Mod - Selected Choice`, 
-    emo_mod = Emo_Mod, persp_mod = Perspective_Nature
+    emo_mod = Emo_Mod, 
+    persp_mod = Perspective_Nature
     ) %>%
   drop_na()
 ```
@@ -386,8 +388,8 @@ neg_dat <-
     `Outcome - Negative Emotion`, 
     `Negative Emotion - First_Mean`:`Negative Emotion - Between_Test`,
     -c(`Negative Emotion - First_Corr`, 
-       `Negative Emotion - Third_Corr`, `
-       Negative Emotion - What was the correlation with [Field-1] perspective?`
+       `Negative Emotion - Third_Corr`, 
+       `Negative Emotion - What was the correlation with [Field-1] perspective?`
        )
     ) %>%
   rename(outcome = `Outcome - Negative Emotion`, 
@@ -398,7 +400,8 @@ neg_dat <-
          first_n = `Negative Emotion - First_N`, 
          third_n = `Negative Emotion - Third_N`, 
          clinical_mod = `Clinical_Mod - Selected Choice`, 
-         emo_mod = Emo_Mod, persp_mod = Perspective_Nature
+         emo_mod = Emo_Mod, 
+         persp_mod = Perspective_Nature
          ) %>%
   drop_na()
 ```
@@ -458,14 +461,56 @@ vivid_bfor <- forest(vivid_bmod, addfit = T, slab = viv_bfor_labs, cex = .8)
 
 Checking for influential cases and potential outliers
 
-```{r}
+```{r vivid_inf_plot}
 vivid_binf <- influence(vivid_bmod)
 plot(vivid_binf, layout = c(4, 2))
 ```
 The 8th study in the model (Sekiguchi & Nonaka, 2017) was an outlier and influential on the other cases. However, this was a coding error by myself and has now been amended in the effect size section as of 10:51 GMT 31/07/18.
 
-Study 2 is also contributing greatly to QF. 
+*Residuals*
+Study 8 is the only study (just) beyond the significant residual threshold at -2. 
 
+Studies 1 and 2 are relatively high too, not far off 2. But, most of the studies are within acceptable limits. 
+
+*Cooks Distance*
+Indicates that studies: 2, 8, and 11 are having much more influence on the model parameter estimates than the others.
+
+*tau2 deletion*
+Indicates that studies 2 and 8 are increasing residual heterogenity by quite a bit. Their removal would lead to a tau^2 of approx. 0.07 instead.
+
+_Analytic Choice:_
+Study 8 does use a different manipulation to all of the other studies (writing style). So, there's a clearer rationale to investigate excluding this as a potential outlier than study 2 which appears similar to others. That said, study 2 has terribly balanced group sizes (as does 13). 
+
+Testing to see what the model and diagnostics would look like without study 8 included.
+
+```{r}
+vivid_subdat1 <- vivid_dat #%>% slice(., -8)
+# treat as NA instead so that the study id labels will still match up to the respective rows
+vivid_subdat1[8, 1:19] <- NA
+
+vivid_bmod2 <- rma(yi, vi, data = vivid_subdat1, test = "knha")
+```
+
+```{r}
+vivid_b2inf <- influence(vivid_bmod2)
+plot(vivid_b2inf, layout = c(4, 2))
+```
+
+Study 2 is still concerning to me. It's quite heterogeneous (tau2.del, and QE.del), has above average weight (weight) and is influential on the model (cooks.d, and dffits). But beyond the unequal group sizes the methodology isn't really unusual. 
+
+Study 11 is interesting in this sense, the clinical spontaneous group from Williams and Moulds. It's fairly influential and increases heterogenity unlike their dysphoric shifted sample.  
+
+Testing what the model looks like without studies 2 and 8
+```{r}
+vivid_subdat2 <- vivid_subdat1
+vivid_subdat2[2, 1:19] <- NA
+
+vivid_bmod3 <- rma(yi, vi, data = vivid_subdat2, test = "knha")
+vivid_b3inf <- influence(vivid_bmod3)
+plot(vivid_b3inf, layout = c(4, 2))
+```
+
+Currently at risk of chasing the influence, remove one and chase the next. LEaving this for now to return later with a clearer mind. In a sense, there's a clearer rationale to evaluate study 11 first. But then it almost seems as though I'm cherry picking the effects that fit with he hypotheses.  
 
 #### Perspective Type
 
